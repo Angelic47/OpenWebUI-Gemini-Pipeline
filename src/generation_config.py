@@ -309,7 +309,7 @@ class GenerationConfigurator:
 
         from .cache import CacheManager
         cache_manager = CacheManager(self.pipe.valves)
-        cache = cache_manager.process_gemini_cache(client, __metadata__, body, filtered_params)
+        cache = cache_manager.process_gemini_cache(client, model_id, __metadata__, body, filtered_params)
         self.log.debug(f"Using cache: {cache}")
         del filtered_params[
             "system_instruction"

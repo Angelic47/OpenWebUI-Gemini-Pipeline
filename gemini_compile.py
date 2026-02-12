@@ -1723,7 +1723,7 @@ class GenerationConfigurator:
             return types.GenerateContentConfig(**filtered_params)
 
         cache_manager = CacheManager(self.pipe.valves)
-        cache = cache_manager.process_gemini_cache(client, __metadata__, body, filtered_params)
+        cache = cache_manager.process_gemini_cache(client, model_id, __metadata__, body, filtered_params)
         self.log.debug(f"Using cache: {cache}")
         del filtered_params[
             "system_instruction"
@@ -2109,7 +2109,7 @@ class CacheManager:
         self.valves = valves
         self.log = logging.getLogger("google_ai.pipe")
 
-    def process_gemini_cache(self, client, __metadata__: dict[str, Any], body: dict[str, Any], gen_config: dict) -> Any:
+    def process_gemini_cache(self, client, google_model_id, __metadata__: dict[str, Any], body: dict[str, Any], gen_config: dict) -> Any:
         """Process and manage Gemini cache for system prompts."""
         gen_tool_list: list[types.Tool] = gen_config.get("tools", None)
         gen_toolConfig: types.ToolConfig = gen_config.get("tool_config", None)
@@ -2166,7 +2166,7 @@ class CacheManager:
                 _cache_config["tool_config"] = gen_toolConfig
             cache_config = types.CreateCachedContentConfig(**_cache_config)
             self.log.debug("Creating new cache for system prompt...")
-            cache = client.caches.create(model=model, config=cache_config)
+            cache = client.caches.create(model=google_model_id, config=cache_config)
             self.log.debug(f"Created cache: {cache}")
         else:
             # update expire time (convert local time to utc time)
